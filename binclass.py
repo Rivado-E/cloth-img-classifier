@@ -9,7 +9,6 @@ import os
 # Set device to GPU if available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Define transformations for data preprocessing
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
@@ -45,25 +44,23 @@ class ClothingDataset(Dataset):
 
 
 # Load and preprocess the dataset
+# TODO
+# add the path to the processed trained dataset
 train_dataset = ClothingDataset(
-    root_dir='path/to/train/dataset', transform=transform)
+    root_dir='path', transform=transform)
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 
 # Load pre-trained ResNet-50 model
 model = models.resnet50(pretrained=True)
 
-# Replace the last fully connected layer for binary classification
 num_features = model.fc.in_features
 model.fc = nn.Linear(num_features, 2)
 
-# Move the model to the device
 model = model.to(device)
 
-# Define loss function and optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-# Fine-tune the model
 num_epochs = 10
 for epoch in range(num_epochs):
     model.train()
